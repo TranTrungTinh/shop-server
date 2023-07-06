@@ -13,20 +13,14 @@ const app = express();
 app.use(morgan('dev'));
 app.use(helmet())
 app.use(compression())
+app.use(express.json()) // Express 4 built-in, not need to install
+app.use(express.urlencoded({ extended: true })) // Express 4 built-in, not need to install
 
 // TODO: init db
 require('./dbs/init.mongodb');
 // checkOverloadConnection();
 // TODO: init routes
-app.get('/', (req, res, next) => {
-  // const str = 'Welcome server shop';
-
-  return res.status(200).json({
-    message: 'Welcome server shop',
-    // metadata: str.repeat(10000)
-  })
-})
-
+app.use('/', require('./routes/index'));
 // TODO: handle error
 
 
