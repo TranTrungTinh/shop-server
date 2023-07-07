@@ -57,15 +57,14 @@ class AccessService {
 
       return {
         code: 201,
-        metadata: {
-          shop: getObjectData({ fields: ['_id', 'name', 'email'], object: newShop }),
-          tokens
-        }
+        shop: getObjectData({ fields: ['_id', 'name', 'email'], object: newShop }),
+        tokens
       }
     }
 
     return {
       code: 200,
+      shop: null,
       message: 'Cannot create new shop',
     }
   }
