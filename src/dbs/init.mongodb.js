@@ -18,6 +18,9 @@ class Database {
     if (true) {
       mongoose.set('debug', true);
       mongoose.set('debug', { color: true });
+      // mongoose.set("debug", (collectionName, method, query, doc) => {
+      //   console.log(`${collectionName}.${method}`, JSON.stringify(query), doc);
+      // });
     }
 
     mongoose.connect(connectString, {
