@@ -14,6 +14,8 @@ router.use(checkApiKey);
 router.use(checkPermission('0000')); // '0000' is meaning all permission
 
 // TODO: Main Route
-router.use('/api/v1', require('./access'));
+const API_VERSION = '/api/v1';
+router.use(`${API_VERSION}`, require('./access'));
+router.use(`${API_VERSION}/product`, require('./product'));
 
 module.exports = router;

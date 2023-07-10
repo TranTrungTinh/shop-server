@@ -7,7 +7,7 @@ const router = express.Router();
 // TODO: Internal modules
 const accessController = require('../../controllers/access.controller');
 const forwardError = require('../../helpers/forwardError');
-const { authentication } = require('../../auth/authUtils');
+const { authentication, authenticationV2 } = require('../../auth/authUtils');
 
 // TODO: route sign up
 router.post('/shop/signup', forwardError(accessController.signUp));
@@ -17,7 +17,7 @@ router.post('/shop/login', forwardError(accessController.login));
 
 // TODO: route logout
 // TODO: middleware authentication
-router.use(authentication)
+router.use(authenticationV2)
 router.post('/shop/logout', forwardError(accessController.logout));
 
 // TODO: route refresh token

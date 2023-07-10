@@ -153,6 +153,38 @@ class AccessService {
     }
   }
 
+  static async refreshTokenV2({ refreshToken, user, keyStore }) {
+    const { userId, email } = user
+
+    // TODO: check token is used
+    if (keyStore.refreshTokensUsed.includes(refreshToken)) {
+      // TODO: Delete all token in keyStore
+      await KeyTokenService.removeKeyByUserId(userId)
+
+      throw new ForbiddenRequest('Something went wrong! Please login again')
+    }
+
+    // TODO: Check token is valid
+    if (keyStore.refreshToken !== refreshToken) throw new UnauthorizedRequest('Invalid token')
+
+    const foundShop = await ShopService.findByEmail({ email })
+
+    if (!foundShop) {
+      throw new UnauthorizedRequest('Shop is not registered')
+    }
+
+    const tokens = createTokenPair({ userId, email }, keyStore.publicKey, keyStore.privateKey)
+
+    // TODO: Update new refreshToken and refreshTokenUsed
+    // TODO: Atomistic update
+    await KeyTokenService.findByIdAndModify(keyStore._id, { newRefreshToken: tokens.refreshToken, oldRefreshToken: refreshToken })
+
+    return {
+      user,
+      tokens
+    }
+  }
+
 }
 
 module.exports = AccessService;

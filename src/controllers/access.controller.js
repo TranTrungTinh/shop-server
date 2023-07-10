@@ -31,9 +31,19 @@ class AccessController {
 
   // TODO: API refresh token
   async refreshToken(req, res, next) {
+    // new OkResponse({
+    //   message: 'Refresh token successfully',
+    //   metadata: await accessService.refreshToken(req.body)
+    // }).send(res)
+
+    // TODO: v2 optimize
     new OkResponse({
       message: 'Refresh token successfully',
-      metadata: await accessService.refreshToken(req.body)
+      metadata: await accessService.refreshTokenV2({
+        refreshToken: req.refreshToken,
+        user: req.user,
+        keyStore: req.keyStore
+      }) // middleware authenticationV2
     }).send(res)
   }
 }

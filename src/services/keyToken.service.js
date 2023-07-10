@@ -21,7 +21,7 @@ class KeyTokenService {
   }
 
   static async findKeyTokenByUserID(userId) {
-    return await keyTokenModel.findOne({ user: new ObjectId(userId) }).lean()
+    return await keyTokenModel.findOne({ user: new ObjectId(userId) }) // .lean()
   }
 
   static async removeKeyByID(id) {
@@ -46,7 +46,7 @@ class KeyTokenService {
         refreshToken: newRefreshToken,
       },
       $addToSet: {
-        refreshTokenUsed: oldRefreshToken
+        refreshTokensUsed: oldRefreshToken
       }
     })
   }
