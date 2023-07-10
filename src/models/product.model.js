@@ -97,9 +97,34 @@ const electronicSchema = new Schema({
   collation: ELECTRONIC_COLLECTION_NAME
 })
 
+// TODO: Electronics Schema Attributes
+const FURNITURE_DOCUMENT_NAME = 'Furniture';
+const FURNITURE_COLLECTION_NAME = 'Furniture';
+
+const furnitureSchema = new Schema({
+  model: {
+    type: String,
+  },
+  color: {
+    type: String,
+  },
+  manufactory: {
+    type: String,
+    required: true,
+  },
+  product_shop: {
+    type: Schema.Types.ObjectId,
+    ref: 'Shop',
+  },
+}, {
+  timestamps: true,
+  collation: FURNITURE_COLLECTION_NAME
+})
+
 // Export the model
 module.exports = {
   product: model(DOCUMENT_NAME, productSchema),
   clothing: model(CLOTHES_DOCUMENT_NAME, clothesSchema),
   electronic: model(ELECTRONIC_DOCUMENT_NAME, electronicSchema),
+  furniture: model(FURNITURE_DOCUMENT_NAME, furnitureSchema),
 };
