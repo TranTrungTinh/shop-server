@@ -6,6 +6,13 @@ const {
   electronic: electronicModel,
   furniture: furnitureModel,
 } = require('../models/product.model');
+const {
+  findAllDraftsForShop,
+  publishProductByShop,
+  unPublishProductByShop,
+  findAllPublishedForShop,
+  getProductSearch
+} = require('../models/repo/product.repo');
 
 // TODO: Define product factory
 class ProductFactory {
@@ -18,15 +25,65 @@ class ProductFactory {
   }
 
   /**
-   * type: clothing | electronic
-   * payload: product attributes
-   * @param {*} param0
+   * @method POST
+   * @param {string} type
+   * @param {JSON} payload
    * @returns
    */
   static async createProduct(type, payload) {
     const ProductClass = this.productTypeRegistry[type]
     if (!ProductClass) throw new BadRequest(`Invalid Product Type:: ${type}`);
     return await new ProductClass(payload).createProduct();
+  }
+
+  /**
+   * @method GET
+   * @param {string} product_shop
+   * @param {Number} limit
+   * @param {Number} skip
+   */
+  static async findAllDraftsForShop({ product_shop, limit = 60, skip = 0 }) {
+    const query = { product_shop, isDraft: true }
+    return await findAllDraftsForShop({ query, limit, skip })
+  }
+
+  /**
+   * @method GET
+   * @param {string} product_shop
+   * @param {Number} limit
+   * @param {Number} skip
+   */
+  static async findAllPublishedForShop({ product_shop, limit = 60, skip = 0 }) {
+    const query = { product_shop, isPublish: true }
+    return await findAllPublishedForShop({ query, limit, skip })
+  }
+
+  /**
+   * @method GET
+   * @param {string} product_shop
+   * @param {Number} limit
+   * @param {Number} skip
+   */
+  static async getProductSearch({ keySearch }) {
+    // const query = { product_shop, isPublish: true }
+    return await getProductSearch({ keySearch })
+  }
+
+  /**
+   * @method PUT
+   * @param {string} product_shop
+   * @param {Number} limit
+   * @param {Number} skip
+   */
+
+  static async publishProductByShop({ product_shop, product_id }) {
+    const query = { product_shop, _id: product_id }
+    return await publishProductByShop(query)
+  }
+
+  static async unPublishProductByShop({ product_shop, product_id }) {
+    const query = { product_shop, _id: product_id }
+    return await unPublishProductByShop(query)
   }
 }
 
