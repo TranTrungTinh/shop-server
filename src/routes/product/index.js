@@ -10,11 +10,14 @@ const forwardError = require('../../helpers/forwardError');
 const { /*authentication*/ authenticationV2 } = require('../../auth/authUtils');
 
 // TODO: handle search
+router.get('', forwardError(productController.findAllProducts));
+router.get('/:id', forwardError(productController.findProduct));
 router.get('/search/:keySearch', forwardError(productController.getProductSearch));
 
 // TODO: middleware authentication
 router.use(authenticationV2)
 router.post('', forwardError(productController.createProduct));
+router.patch('/:id', forwardError(productController.updateProduct));
 router.put('/published/:id', forwardError(productController.publishProduct));
 router.put('/unpublished/:id', forwardError(productController.unPublishProduct));
 

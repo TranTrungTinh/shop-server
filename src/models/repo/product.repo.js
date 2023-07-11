@@ -1,11 +1,13 @@
 const { Types } = require('mongoose');
 const {
-  product: productModel,
-  clothing: clothingModel,
-  electronic: electronicModel,
-  furniture: furnitureModel,
+  product: productModel, product,
+  // clothing: clothingModel,
+  // electronic: electronicModel,
+  // furniture: furnitureModel,
 } = require('../product.model');
+const { getSelectFields, getUnSelectFields } = require('../../utils');
 
+// TODO: Query
 const queryProducts = async ({ query, limit, skip }) => {
   return await productModel.find(query)
     .populate('product_shop', 'name email -_id')
@@ -49,6 +51,31 @@ const getProductSearch = async ({ keySearch, limit, skip }) => {
   return results
 }
 
+const getAllProducts = async ({ limit, page, sort, filter, select }) => {
+  const skip = (page - 1) * limit
+  const sortBy = sort === 'ctime' ? { _id: -1 } : { _id: 1 }
+
+  const results = await productModel
+    .find(filter)
+    .sort(sortBy)
+    .skip(skip)
+    .limit(limit)
+    .select(getSelectFields(select))
+    .lean()
+    .exec();
+
+  return results
+}
+
+const getProductById = async ({ product_id, unSelect }) => {
+  return await productModel
+    .findById(product_id)
+    .select(getUnSelectFields(unSelect))
+    .populate('product_shop', 'name email -_id')
+    .lean()
+    .exec();
+}
+
 const publishProductByShop = async ({ product_shop, product_id }) => {
   const foundProduct = await productModel.findOne({
     id: new Types.ObjectId(product_id),
@@ -85,6 +112,16 @@ const unPublishProductByShop = async ({ product_shop, product_id }) => {
   return modifiedCount
 }
 
+// TODO: Update
+const updateProductById = async ({
+  productId,
+  bodyUpdate,
+  model,
+  option = { new: true }
+}) => {
+  return await model.findByIdAndUpdate(productId, bodyUpdate, option)
+}
+
 
 
 module.exports = {
@@ -92,5 +129,8 @@ module.exports = {
   findAllPublishedForShop,
   publishProductByShop,
   unPublishProductByShop,
-  getProductSearch
+  getProductSearch,
+  getAllProducts,
+  getProductById,
+  updateProductById
 }

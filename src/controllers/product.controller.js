@@ -71,6 +71,22 @@ class ProductController {
     }).send(res)
   }
 
+  async findAllProducts(req, res, next) {
+    new OkResponse({
+      message: 'Find all products successfully',
+      metadata: await productService.getAllProducts(req.query)
+    }).send(res)
+  }
+
+  async findProduct(req, res, next) {
+    new OkResponse({
+      message: 'Find one product successfully',
+      metadata: await productService.getProductById({
+        product_id: req.params.id,
+      })
+    }).send(res)
+  }
+
   /**
  * TODO: Publish product
  * @param {String} product_id
@@ -100,6 +116,27 @@ class ProductController {
         product_id: req.params.id,
         product_shop: req.user.userId // middleware authenticationV2
       })
+    }).send(res)
+  }
+
+  /**
+ * TODO: Update Product
+ * @param {String} product_id
+ * @param {String} product_shop
+ *
+ */
+
+  async updateProduct(req, res, next) {
+    new OkResponse({
+      message: 'Updated product successfully',
+      metadata: await productService.updateProduct(
+        req.body.product_type,
+        req.params.id,
+        {
+          ...req.body,
+          product_shop: req.user.userId // middleware authenticationV2
+        },
+      )
     }).send(res)
   }
 }

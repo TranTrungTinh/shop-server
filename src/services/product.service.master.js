@@ -11,8 +11,12 @@ const {
   publishProductByShop,
   unPublishProductByShop,
   findAllPublishedForShop,
-  getProductSearch
+  getProductSearch,
+  getAllProducts,
+  getProductById,
+  updateProductById
 } = require('../models/repo/product.repo');
+const { compactDeepObject } = require('../utils');
 
 // TODO: Define product factory
 class ProductFactory {
@@ -34,6 +38,18 @@ class ProductFactory {
     const ProductClass = this.productTypeRegistry[type]
     if (!ProductClass) throw new BadRequest(`Invalid Product Type:: ${type}`);
     return await new ProductClass(payload).createProduct();
+  }
+
+  /**
+   * @method PATCH
+   * @param {string} type
+   * @param {JSON} payload
+   * @returns
+   */
+  static async updateProduct(type, productId, payload) {
+    const ProductClass = this.productTypeRegistry[type]
+    if (!ProductClass) throw new BadRequest(`Invalid Product Type:: ${type}`);
+    return await new ProductClass(payload).updateProduct(productId);
   }
 
   /**
@@ -65,8 +81,33 @@ class ProductFactory {
    * @param {Number} skip
    */
   static async getProductSearch({ keySearch }) {
-    // const query = { product_shop, isPublish: true }
     return await getProductSearch({ keySearch })
+  }
+
+  /**
+   * @method GET
+   * @param {Number} limit
+   * @param {Number} page
+   * @param {Number} sort
+   * @param {Number} filter
+   * @param {Array<String>} select
+   */
+  static async getAllProducts({ limit = 50, page = 1, sort = 'ctime', skip = 0, filter = {}, select = [] }) {
+    return await getAllProducts({
+      limit, page, sort, filter, select: ['product_name', 'product_thumb', 'product_price']
+    })
+  }
+
+  /**
+   * @method GET
+   * @param {string} product_id
+   * @param {Array<String>} unSelect
+   */
+  static async getProductById({ product_id }) {
+    return await getProductById({
+      product_id,
+      unSelect: ['__v']
+    })
   }
 
   /**
@@ -75,7 +116,6 @@ class ProductFactory {
    * @param {Number} limit
    * @param {Number} skip
    */
-
   static async publishProductByShop({ product_shop, product_id }) {
     const query = { product_shop, _id: product_id }
     return await publishProductByShop(query)
@@ -113,6 +153,15 @@ class Product {
   async createProduct(id) {
     return await productModel.create({ ...this, _id: id });
   }
+
+  async updateProduct(productId, bodyUpdate) {
+    return await updateProductById({
+      productId,
+      bodyUpdate,
+      model: productModel,
+      options: { new: true }
+    })
+  }
 }
 
 // TODO: Define sub-class clothing for each product type
@@ -144,6 +193,28 @@ class Electronic extends Product {
     if (!newProduct) throw new BadRequest('Cannot create new product');
 
     return newProduct;
+  }
+
+  async updateProduct(productId) {
+    // TODO: Step 1: Check bodyUpdate contain product_attributes
+    const objectParams = this
+    // TODO: Step 2: Drop attribute is nil
+
+    if (objectParams.product_attributes) {
+      const bodyChildUpdate = compactDeepObject(objectParams.product_attributes)
+      // TODO: update children
+      await updateProductById({
+        productId,
+        bodyUpdate: bodyChildUpdate,
+        model: electronicModel,
+        options: { new: true }
+      })
+    }
+
+    // TODO: Update parent
+    const bodyParentUpdate = compactDeepObject(objectParams)
+    const updatedProduct = await super.updateProduct(productId, bodyParentUpdate)
+    return updatedProduct
   }
 }
 
