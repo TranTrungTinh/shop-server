@@ -7,7 +7,7 @@ const router = express.Router();
 // TODO: Internal modules
 const accessController = require('../../controllers/access.controller');
 const forwardError = require('../../helpers/forwardError');
-const { authentication, authenticationV2 } = require('../../auth/authUtils');
+const { authentication, authenticationV2 } = require('../../middleware/auth');
 
 // TODO: route sign up
 router.post('/shop/signup', forwardError(accessController.signUp));

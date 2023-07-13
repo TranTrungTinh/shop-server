@@ -7,7 +7,7 @@ const router = express.Router();
 // TODO: Internal modules
 const productController = require('../../controllers/product.controller');
 const forwardError = require('../../helpers/forwardError');
-const { /*authentication*/ authenticationV2 } = require('../../auth/authUtils');
+const { /*authentication*/ authenticationV2 } = require('../../middleware/auth');
 
 // TODO: handle search
 router.get('', forwardError(productController.findAllProducts));

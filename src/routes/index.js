@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 
 // TODO: Internal Modules
-const { checkApiKey, checkPermission } = require('../auth/checkApiKey');
+const { checkApiKey, checkPermission } = require('../middleware/apiKeyValidate');
 
 /* *Middleware */
 // TODO: Check API Key
@@ -15,6 +15,7 @@ router.use(checkPermission('0000')); // '0000' is meaning all permission
 
 // TODO: Main Route
 const API_VERSION = '/api/v1';
+router.use(`${API_VERSION}/discount`, require('./discount'));
 router.use(`${API_VERSION}/product`, require('./product'));
 router.use(`${API_VERSION}`, require('./access'));
 

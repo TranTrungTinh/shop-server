@@ -3,6 +3,11 @@
 const _ = require('lodash');
 const crypto = require('node:crypto');
 const { flatten } = require('flat')
+const { Types } = require('mongoose');
+
+const convertToObjectId = (id) => {
+  return Types.ObjectId(id);
+}
 
 const getObjectData = ({ fields = [], object = {} }) => {
   return _.pick(object, fields);
@@ -29,10 +34,19 @@ const compactDeepObject = (object = {}) => {
   return _.omitBy(flattenObject, _.isNil);
 }
 
+// TODO: Check current Date is between start and end date
+const isDateBetween = ({
+  currentDate = new Date(), startDate, endDate
+}) => {
+  return currentDate >= new Date(startDate) && currentDate <= new Date(endDate);
+}
+
 module.exports = {
   getObjectData,
   getRandomString,
   getSelectFields,
   getUnSelectFields,
-  compactDeepObject
+  compactDeepObject,
+  convertToObjectId,
+  isDateBetween
 }

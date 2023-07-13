@@ -18,6 +18,7 @@ class Database {
     if (true) {
       mongoose.set('debug', true);
       mongoose.set('debug', { color: true });
+      // mongoose.set('strictQuery', false);
       // mongoose.set("debug", (collectionName, method, query, doc) => {
       //   console.log(`${collectionName}.${method}`, JSON.stringify(query), doc);
       // });
@@ -28,7 +29,7 @@ class Database {
     })
       .then(() => {
         connectCount()
-        console.log('Connected to mongodb');
+        console.log(`Connected to mongodb`)
       })
       .catch(err => {
         console.log('Connect to mongodb failed');
