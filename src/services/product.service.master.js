@@ -117,12 +117,12 @@ class ProductFactory {
    * @param {Number} skip
    */
   static async publishProductByShop({ product_shop, product_id }) {
-    const query = { product_shop, _id: product_id }
+    const query = { product_shop, product_id }
     return await publishProductByShop(query)
   }
 
   static async unPublishProductByShop({ product_shop, product_id }) {
-    const query = { product_shop, _id: product_id }
+    const query = { product_shop, product_id }
     return await unPublishProductByShop(query)
   }
 }

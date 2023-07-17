@@ -3,11 +3,11 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 
- // TODO: init db
+// TODO: init logging, middleware
 require('./startup/logging')();
 require('./startup/middleware')(app);
- // TODO: init db
- require('./dbs/init.mongodb');
- require('./startup/routes')(app);
+// TODO: init db, routes
+require('./dbs/init.mongodb');
+require('./startup/routes')(app);
 
 module.exports = app;

@@ -5,7 +5,7 @@ const {
   // electronic: electronicModel,
   // furniture: furnitureModel,
 } = require('../product.model');
-const { getSelectFields, getUnSelectFields } = require('../../utils');
+const { getSelectFields, getUnSelectFields, convertToObjectId } = require('../../utils');
 
 // TODO: Query
 const queryProducts = async ({ query, limit, skip }) => {
@@ -78,8 +78,8 @@ const getProductById = async ({ product_id, unSelect }) => {
 
 const publishProductByShop = async ({ product_shop, product_id }) => {
   const foundProduct = await productModel.findOne({
-    id: new Types.ObjectId(product_id),
-    product_shop: new Types.ObjectId(product_shop)
+    _id: convertToObjectId(product_id),
+    product_shop: convertToObjectId(product_shop)
   })
 
   if (!foundProduct) return null
@@ -96,8 +96,8 @@ const publishProductByShop = async ({ product_shop, product_id }) => {
 
 const unPublishProductByShop = async ({ product_shop, product_id }) => {
   const foundProduct = await productModel.findOne({
-    id: new Types.ObjectId(product_id),
-    product_shop: new Types.ObjectId(product_shop)
+    _id: convertToObjectId(product_id),
+    product_shop: convertToObjectId(product_shop)
   })
 
   if (!foundProduct) return null
@@ -122,6 +122,18 @@ const updateProductById = async ({
   return await model.findByIdAndUpdate(productId, bodyUpdate, option)
 }
 
+const checkProductAfterCheckout = async (products = []) => {
+  return await Promise.all(products.map(async (product) => {
+    const foundProduct = await getProductById({ product_id: product.productId })
+    if (foundProduct) {
+      return {
+        product_price: foundProduct.product_price,
+        product_quantity: product.quantity,
+        productId: product.productId,
+      }
+    }
+  }))
+}
 
 
 module.exports = {
@@ -132,5 +144,6 @@ module.exports = {
   getProductSearch,
   getAllProducts,
   getProductById,
-  updateProductById
+  updateProductById,
+  checkProductAfterCheckout
 }

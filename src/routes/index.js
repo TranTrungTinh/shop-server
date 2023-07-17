@@ -15,8 +15,10 @@ router.use(checkPermission('0000')); // '0000' is meaning all permission
 
 // TODO: Main Route
 const API_VERSION = '/api/v1';
+router.use(`${API_VERSION}/checkout`, require('./checkout'));
 router.use(`${API_VERSION}/discount`, require('./discount'));
 router.use(`${API_VERSION}/product`, require('./product'));
+router.use(`${API_VERSION}/cart`, require('./cart'));
 router.use(`${API_VERSION}`, require('./access'));
 
 module.exports = router;
