@@ -375,18 +375,18 @@ class DiscountService {
         throw new BadRequest('User has used up discount code')
       }
     }
-    console.log('total', total)
+    // console.log('total', total)
 
     // TODO: Get discount amount
     let discountAmount = 0
     if (discount_type === 'percentage') {
       const assumeDiscount = (discount_value / 100) * total
       discountAmount = assumeDiscount > discount_max_value ? discount_max_value : assumeDiscount
-      console.log('assumeDiscount', assumeDiscount)
-      console.log('discountAmount', discountAmount)
+      // console.log('assumeDiscount', assumeDiscount)
+      // console.log('discountAmount', discountAmount)
     } else {
       discountAmount = total > discount_max_value ? discount_max_value : total
-      console.log('discountAmount', discountAmount)
+      // console.log('discountAmount', discountAmount)
 
     }
 

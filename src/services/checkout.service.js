@@ -4,6 +4,8 @@ const { NotFoundRequest, BadRequest } = require("../core/error.response")
 const { getDiscountAmount } = require("./discount.service")
 const { findCartById } = require("../models/repo/cart.repo")
 const { checkProductAfterCheckout } = require("../models/repo/product.repo")
+const { acquireLock, releaseLock } = require("./redis.service")
+const { createNewOrder } = require("../models/repo/order.repo")
 
 class CheckoutService {
   /**
@@ -105,6 +107,78 @@ class CheckoutService {
       checkout_order: checkoutOrder
     }
   }
+
+  /**
+   * @description Order checkout
+   * @param {Array} shop_order_ids
+   */
+  static async checkoutByUser({
+    userId,
+    cardId,
+    shop_order_ids,
+    user_address = {},
+    user_payment = {},
+  }) {
+    const { shop_order_ids_new, checkout_order } = await this.getCheckoutReview({
+      cardId,
+      userId,
+      shop_order_ids
+    })
+
+    const products = shop_order_ids_new.flatMap(item => item.item_products)
+
+    const acquireProduct = []
+
+    for (const product of products) {
+      const { productId, product_quantity } = product
+
+      const keyLock = await acquireLock({
+        productId,
+        quantity: product_quantity,
+        cartId
+      })
+
+      //TODO: Check lock success
+      acquireProduct.push(keyLock ? true : false)
+
+      //TODO: Release lock
+      keyLock && await releaseLock(keyLock)
+    }
+
+    if (acquireProduct.includes(false)) {
+      throw new BadRequest('Product is not available! PLease check your cart')
+    }
+
+    // TODO: Create new order
+    const newOrder = await createNewOrder({
+      userId,
+      checkout_order,
+      user_address,
+      user_payment,
+      shop_order_ids_new
+    })
+
+
+    if (newOrder) {
+      //! TODO: Remove cart if checkout success
+    }
+
+    return newOrder
+  }
+
+  // Query orders
+  static async getOrdersByUser({ userId }) {}
+
+  static async getOrderById({ orderId }) {}
+
+  // TODO: Update order by shop
+  static async updateOrderByStatus({ orderId }) {}
+
+  // ! Update order by shop
+  static async updateOrderByAdmin({ orderId }) {}
+
+  static async cancelOrderById({ orderId }) {}
+
 }
 
 module.exports = CheckoutService
