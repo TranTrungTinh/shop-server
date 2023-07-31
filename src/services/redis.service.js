@@ -3,13 +3,21 @@
 // TODO Implement redis optimistic lock
 
 const redis = require('redis')
-const { promisify } = require('util')
-const { reservationInventory } = require('../models/repo/inventory.repo')
-const redisClient = redis.createClient()
+const util = require("util");
+const env  = require('../configs/environment.config');
 
-const pexpireAsync = promisify(redisClient.pexpire).bind(redisClient)
-const setnxAsync = promisify(redisClient.setnx).bind(redisClient)
-const deleteAsync = promisify(redisClient.del).bind(redisClient)
+const { reservationInventory } = require('../models/repo/inventory.repo');
+const redisClient = redis.createClient({
+  password: env.redis.password,
+  socket: {
+    host: env.redis.host,
+    port: env.redis.port
+  }
+})
+
+const pexpireAsync = util.promisify(redisClient.pExpire).bind(redisClient)
+const setnxAsync = util.promisify(redisClient.setEx).bind(redisClient)
+const deleteAsync = util.promisify(redisClient.del).bind(redisClient)
 
 const acquireLock = async ({ productId, quantity, cartId }) => {
   const key = `lock:v2023:${productId}`

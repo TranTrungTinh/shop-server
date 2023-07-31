@@ -8,6 +8,11 @@ const devEnv = {
     host: process.env.DEV_DB_HOST || 'localhost',
     name: process.env.DEV_DB_NAME || 'storeDev',
     port: process.env.DEV_DB_PORT || 27017,
+  },
+  redis: {
+    host: process.env.DEV_REDIS_DB_HOST || 'localhost',
+    port: process.env.DEV_REDIS_DB_PORT || 6379,
+    password: process.env.DEV_REDIS_DB_PASSWORD || '',
   }
 }
 
@@ -19,6 +24,11 @@ const proEnv = {
     host: process.env.PRO_DB_HOST || 'localhost',
     name: process.env.PRO_DB_NAME || 'storePro',
     port: process.env.PRO_DB_PORT || 27017,
+  },
+  redis: {
+    host: process.env.PRO_REDIS_DB_HOST || 'localhost',
+    port: process.env.PRO_REDIS_DB_PORT || 6379,
+    password: process.env.PRO_REDIS_DB_PASSWORD || '',
   }
 }
 
