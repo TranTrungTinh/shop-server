@@ -12,5 +12,6 @@ const { /*authentication*/ authenticationV2 } = require('../../middleware/auth')
 router.use(authenticationV2)
 router.get('', forwardError(commentController.getComments));
 router.post('', forwardError(commentController.addComment));
+router.delete('', forwardError(commentController.deleteComment));
 
 module.exports = router;

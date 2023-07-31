@@ -3,6 +3,7 @@
 const { NotFoundRequest } = require("../core/error.response")
 const commentModel = require("../models/comment.model")
 const { getAllComments, getCommentById } = require("../models/repo/comment.repo")
+const { getProductById } = require("../models/repo/product.repo")
 const { convertToObjectId } = require("../utils")
 
 /**
@@ -103,6 +104,48 @@ class CommentService {
       page,
       select: ['comment_content', 'comment_left', 'comment_right', 'comment_parent_id']
     })
+  }
+
+  //TODO: deleteComment by Admin
+  static async deleteComment({ id, productId }) {
+
+    const product = await getProductById({ product_id: productId })
+    if (!product) throw new NotFoundRequest('Product not found')
+
+    const comment = await getCommentById(id)
+    if (!comment) throw new NotFoundRequest('Comment not found')
+
+    //TODO: 1. Get left and right value of comment
+    const leftValue = comment.comment_left
+    const rightValue = comment.comment_right
+
+    //TODO: 2. Determine the number of comments to be deleted
+    const widthBox = rightValue - leftValue + 1
+
+    await Promise.allSettled([
+      //TODO: 3. Delete comment
+      commentModel.deleteMany({
+        comment_product_id: convertToObjectId(productId),
+        comment_left: { $gte: leftValue, $lte: rightValue }
+      }),
+
+      //TODO: 4. Update comment left
+      commentModel.updateMany({
+        comment_product_id: convertToObjectId(productId),
+        comment_left: { $gt: rightValue }
+      }, {
+        $inc: { comment_left: -widthBox }
+      }),
+
+      //TODO: 5. Update comment right
+      commentModel.updateMany({
+        comment_product_id: convertToObjectId(productId),
+        comment_right: { $gt: rightValue }
+      }, {
+        $inc: { comment_right: -widthBox }
+      })
+    ])
+
   }
 }
 
