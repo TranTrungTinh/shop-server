@@ -1,5 +1,6 @@
 
 const { BadRequest } = require('../core/error.response');
+const inventoryModel = require('../models/inventory.model');
 const {
   product: productModel,
   clothing: clothingModel,
@@ -17,6 +18,7 @@ const {
   updateProductById
 } = require('../models/repo/product.repo');
 const { compactDeepObject } = require('../utils');
+const NotificationService = require('./notification.service');
 
 // TODO: Define product factory
 class ProductFactory {
@@ -151,7 +153,28 @@ class Product {
 
   // TODO: Create new product
   async createProduct(id) {
-    return await productModel.create({ ...this, _id: id });
+    const newProduct = await productModel.create({ ...this, _id: id });
+    if (newProduct) {
+
+      // TODO: Create new inventory
+      await inventoryModel.create({
+        inventory_product: newProduct._id,
+        inventory_shop: newProduct.product_shop,
+        inventory_stock: newProduct.product_quantity
+      })
+
+      // TODO: Push notify new product to shop
+
+      NotificationService.sendNotification({
+        type: 'SHOP-001',
+        receiverId: '1',
+        senderId: newProduct.product_shop,
+        options: {
+          productName: newProduct.product_name,
+          shopName: newProduct.product_shop
+        }
+      }).then(console.log).catch(console.log)
+    }
   }
 
   async updateProduct(productId, bodyUpdate) {
